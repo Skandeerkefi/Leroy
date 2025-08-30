@@ -1,6 +1,6 @@
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
-import { FaKickstarterK } from "react-icons/fa"; // Kick icon approximation
+import { FaKickstarterK, FaTiktok } from "react-icons/fa"; // Kick icon approximation
 import { FaInstagram, FaDiscord, FaXTwitter } from "react-icons/fa6"; // Instagram, Discord, X
 
 export function Footer() {
@@ -12,11 +12,13 @@ export function Footer() {
 				<div className='grid grid-cols-1 gap-8 md:grid-cols-3'>
 					{/* About */}
 					<div>
-						<h3 className='mb-3 text-lg font-bold text-white'>LIKETHACHEESE</h3>
+						<h3 className='mb-3 text-lg font-bold text-white'>
+							LeroyyJenderson
+						</h3>
 						<p className='text-sm text-white/80'>
-							Join LIKETHACHEESE&apos;s community for exciting gambling streams,
-							giveaways, and more. Use affiliate code{" "}
-							<span className='font-semibold text-[#E10600]'>LIKETHACHEESE</span> on
+							Join LeroyyJenderson&apos;s community for exciting gambling
+							streams, giveaways, and more. Use affiliate code{" "}
+							<span className='font-semibold text-[#E10600]'>Leroyy</span> on
 							Rainbet.
 						</p>
 					</div>
@@ -57,7 +59,7 @@ export function Footer() {
 						<h3 className='mb-3 text-lg font-bold text-white'>Connect</h3>
 						<div className='flex gap-3'>
 							<a
-								href='https://kick.com/likethacheese'
+								href='https://kick.com/LeroyyJenderson'
 								target='_blank'
 								rel='noreferrer'
 								className='flex items-center justify-center transition-colors bg-[#111] rounded-full w-9 h-9 hover:bg-[#E10600] text-white'
@@ -65,7 +67,7 @@ export function Footer() {
 								<FaKickstarterK className='w-5 h-5' />
 							</a>
 							<a
-								href='https://x.com/Mister7ee'
+								href='https://x.com/LeroyyJenderson'
 								target='_blank'
 								rel='noreferrer'
 								className='flex items-center justify-center transition-colors bg-[#111] rounded-full w-9 h-9 hover:bg-[#E10600] text-white'
@@ -73,7 +75,7 @@ export function Footer() {
 								<FaXTwitter className='w-5 h-5' />
 							</a>
 							<a
-								href='https://discord.gg/s7hgvGGaV4'
+								href='https://discord.gg/53rN2TwQv6'
 								target='_blank'
 								rel='noreferrer'
 								className='flex items-center justify-center transition-colors bg-[#111] rounded-full w-9 h-9 hover:bg-[#E10600] text-white'
@@ -81,14 +83,14 @@ export function Footer() {
 								<FaDiscord className='w-5 h-5' />
 							</a>
 
-							<a
-								href='https://www.instagram.com/LikeThaCheese'
+							{/* <a
+								href='https://www.tiktok.com/LeroyyJenderson'
 								target='_blank'
 								rel='noreferrer'
 								className='flex items-center justify-center transition-colors bg-[#111] rounded-full w-9 h-9 hover:bg-[#E10600] text-white'
 							>
-								<FaInstagram className='w-5 h-5' />
-							</a>
+								<FaTiktok className='w-5 h-5' />
+							</a> */}
 						</div>
 					</div>
 				</div>
@@ -96,7 +98,7 @@ export function Footer() {
 				{/* Bottom Bar */}
 				<div className='pt-4 mt-8 text-sm text-center text-white/70 border-t border-[#333]'>
 					<p className='flex flex-wrap items-center justify-center gap-1 text-sm'>
-						© {currentYear} LIKETHACHEESE. Made with
+						© {currentYear} LeroyyJenderson. Made with
 						<Heart className='w-3 h-3 mx-1 text-[#E10600]' />
 						for the community by
 						<a

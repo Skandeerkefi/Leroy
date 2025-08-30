@@ -18,7 +18,7 @@ interface LeaderboardState {
 	fetchLeaderboard: () => Promise<void>;
 }
 
-const API_URL = "https://likethacheesedata.onrender.com/api/affiliates";
+const API_URL = "http://localhost:3000/api/affiliates";
 
 const getDateRange = (
 	period: LeaderboardPeriod

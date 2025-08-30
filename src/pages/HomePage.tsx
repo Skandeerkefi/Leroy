@@ -4,428 +4,181 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { Link } from "react-router-dom";
-import { Dices, Crown, Gift, Users, ArrowRight } from "lucide-react";
+import { Crown, ArrowRight, Calendar, Gift } from "lucide-react";
 import { useLeaderboardStore } from "@/store/useLeaderboardStore";
-import { useSlotCallStore } from "@/store/useSlotCallStore";
-import { useGiveawayStore } from "@/store/useGiveawayStore";
 import GraphicalBackground from "@/components/GraphicalBackground";
 
-// Cheese Theme Colors
+// Dark Red / Black / White Theme
 const COLORS = {
-	primary: "#d7590b", // cheddar orange
-	accent: "#fcc63f", // cheese yellow
-	dark: "#6f3504", // crust brown
-	light: "#fbde96", // light cheese
+  primary: "#b91c1c", // dark red
+  accent: "#f87171", // lighter red
+  dark: "#0a0a0a", // background
+  card: "#111111", // card background
+  light: "#fafafa", // text
 };
 
 function HomePage() {
-	const { slotCalls } = useSlotCallStore();
-	const { giveaways } = useGiveawayStore();
-	const { leaderboard, fetchLeaderboard, period } = useLeaderboardStore();
+  const { leaderboard, fetchLeaderboard } = useLeaderboardStore();
+  const topLeaderboard = Array.isArray(leaderboard)
+    ? leaderboard.slice(0, 5)
+    : [];
 
-	const topLeaderboard = Array.isArray(leaderboard)
-		? leaderboard.slice(0, 5)
-		: [];
+  // Countdown state
+  const [timeLeft, setTimeLeft] = useState("00:00:00:00");
 
-	const now = new Date();
-	const monthEndDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-	monthEndDate.setHours(23, 59, 59, 999);
-	const monthEndISO = monthEndDate.toISOString();
+  useEffect(() => {
+    if (!leaderboard || leaderboard.length === 0) fetchLeaderboard();
 
-	useEffect(() => {
-		if (!leaderboard || leaderboard.length === 0) {
-			fetchLeaderboard();
-		}
-	}, [leaderboard, fetchLeaderboard]);
+    const updateCountdown = () => {
+      const now = new Date();
+      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      nextMonth.setHours(0, 0, 0, 0);
 
-	const [timeLeft, setTimeLeft] = useState("");
+      const diff = nextMonth.getTime() - now.getTime();
 
-	useEffect(() => {
-		const interval = setInterval(() => {
-			const now = new Date();
-			const end = new Date(monthEndISO);
-			const diff = end.getTime() - now.getTime();
+      if (diff <= 0) {
+        setTimeLeft("00:00:00:00");
+        return;
+      }
 
-			if (diff <= 0) {
-				setTimeLeft("00d : 00h : 00m : 00s");
-				clearInterval(interval);
-				return;
-			}
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
 
-			const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-			const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-			const minutes = Math.floor((diff / (1000 * 60)) % 60);
-			const seconds = Math.floor((diff / 1000) % 60);
+      setTimeLeft(
+        `${days.toString().padStart(2, "0")}:${hours
+          .toString()
+          .padStart(2, "0")}:${minutes
+          .toString()
+          .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+      );
+    };
 
-			setTimeLeft(
-				`${days.toString().padStart(2, "0")}d : ${hours
-					.toString()
-					.padStart(2, "0")}h : ${minutes
-					.toString()
-					.padStart(2, "0")}m : ${seconds.toString().padStart(2, "0")}s`
-			);
-		}, 1000);
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
 
-		return () => clearInterval(interval);
-	}, [monthEndISO]);
+    return () => clearInterval(interval);
+  }, [leaderboard, fetchLeaderboard]);
 
-	return (
-		<div className='relative flex flex-col min-h-screen text-dark'>
-			{/* Animated Cheese Background */}
-			<GraphicalBackground />
+  return (
+    <div className="relative flex flex-col min-h-screen text-white bg-black">
+      <GraphicalBackground />
+      <Navbar />
 
-			<Navbar />
+      <main className="relative z-10 flex-grow">
+        {/* HERO */}
+        <section className="container flex flex-col-reverse items-center gap-12 px-6 py-20 mx-auto md:flex-row">
+          <div className="text-center md:w-1/2 md:text-left">
+            <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-transparent md:text-6xl bg-gradient-to-r from-red-700 via-red-500 to-red-700 bg-clip-text">
+              LeroyyJenderson
+              <br />
+              Official Kick Stream
+            </h1>
+            <p className="mb-8 text-lg text-gray-300">
+              Daily <span className="font-semibold text-red-400">gambling thrills</span> and giveaways. Join the excitement live!
+            </p>
+            <Button
+              size="lg"
+              className="px-8 py-4 font-bold transition-transform bg-red-600 rounded-full shadow-lg hover:bg-red-700 hover:scale-105"
+              asChild
+            >
+              <a
+                href="https://kick.com/LeroyyJenderson"
+                target="_blank"
+                rel="noreferrer"
+              >
+                🎥 Watch Live
+              </a>
+            </Button>
+          </div>
+          <div className="overflow-hidden border-4 border-red-600 shadow-2xl md:w-1/2 aspect-video rounded-3xl">
+            <iframe
+              src="https://player.kick.com/LeroyyJenderson"
+              frameBorder="0"
+              allowFullScreen
+              title="LeroyyJenderson Live Stream"
+              className="w-full h-full"
+            />
+          </div>
+        </section>
 
-			<main className='relative z-10 flex-grow'>
-				{/* Hero Section */}
-				<section className='flex flex-col-reverse items-center justify-center max-w-6xl gap-16 px-6 mx-auto py-28 sm:flex-row sm:items-center'>
-					<div className='max-w-xl text-center sm:text-left'>
-						<h1
-							className='text-5xl font-extrabold leading-tight tracking-tight drop-shadow-md'
-							style={{
-								background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.accent}, ${COLORS.primary})`,
-								WebkitBackgroundClip: "text",
-								color: "transparent",
-							}}
-						>
-							LikeThaCheese&apos;s <br /> Official Stream
-						</h1>
+        {/* LEADERBOARD PRIZES */}
+        <section className="container mx-auto my-16 text-center">
+          <h2 className="flex items-center justify-center gap-2 mb-6 text-3xl font-bold text-red-500">
+            <Gift className="w-6 h-6 text-red-500" /> Monthly $600 Leaderboard
+          </h2>
+          <div className="flex flex-wrap justify-center gap-6">
+            <div className="p-6 border border-red-600 shadow-lg w-60 bg-gray-900/70 rounded-2xl">
+              <h3 className="text-xl font-bold text-red-400">1st Place</h3>
+              <p className="text-gray-300">$400</p>
+            </div>
+            <div className="p-6 border border-red-600 shadow-lg w-60 bg-gray-900/70 rounded-2xl">
+              <h3 className="text-xl font-bold text-red-400">2nd Place</h3>
+              <p className="text-gray-300">$150</p>
+            </div>
+            <div className="p-6 border border-red-600 shadow-lg w-60 bg-gray-900/70 rounded-2xl">
+              <h3 className="text-xl font-bold text-red-400">3rd Place</h3>
+              <p className="text-gray-300">$50</p>
+            </div>
+          </div>
+        </section>
 
-						<div
-							className='w-24 h-1 mt-6 rounded-full animate-pulse'
-							style={{ backgroundColor: COLORS.primary }}
-						/>
+        {/* COUNTDOWN */}
+        <section className="container mx-auto my-16 text-center">
+          <h2 className="mb-6 text-3xl font-bold text-red-500">⏳ Monthly Countdown</h2>
+          <div className="inline-flex justify-center gap-5 px-12 py-6 font-mono text-3xl border border-red-600 shadow-md bg-gray-900/60 rounded-3xl">
+            {timeLeft.split(":").map((val, i) => (
+              <div key={i} className="flex flex-col items-center">
+                <span className="font-bold text-red-400">{val}</span>
+                <span className="mt-1 text-xs text-gray-400">{["D", "H", "M", "S"][i]}</span>
+              </div>
+            ))}
+          </div>
+        </section>
 
-						<p
-							className='mt-6 text-lg font-medium tracking-wide'
-							style={{ color: COLORS.dark }}
-						>
-							Watch LikeThaCheese live on Kick — thrilling gambling streams,
-							giveaways, and more.
-						</p>
-					</div>
+        {/* LEADERBOARD TABLE */}
+        <section className="container px-6 mx-auto my-20">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="flex items-center gap-2 text-2xl font-bold">
+              <Crown className="w-6 h-6 text-red-500" /> Top Players
+            </h2>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-white border-red-500 hover:bg-red-600"
+              asChild
+            >
+              <Link to="/leaderboard" className="flex items-center gap-1">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
+          </div>
+          <LeaderboardTable period="monthly" data={topLeaderboard} />
+        </section>
+		
 
-					<div
-						className='w-full max-w-xl overflow-hidden border-4 shadow-lg aspect-video rounded-3xl'
-						style={{ borderColor: COLORS.primary }}
-					>
-						<iframe
-							src='https://player.kick.com/LikeThaCheese'
-							frameBorder='0'
-							allowFullScreen
-							title='LikeThaCheese Live Stream'
-							className='w-full h-full'
-						></iframe>
-					</div>
-				</section>
-				{/* Register + Countdown Section */}
-				<section
-					className='relative flex flex-col items-center max-w-4xl gap-8 px-6 py-10 mx-auto my-16 shadow-lg rounded-3xl'
-					style={{
-						background: `linear-gradient(135deg, ${COLORS.primary}33, ${COLORS.accent}22)`,
-						border: `3px solid ${COLORS.primary}`,
-					}}
-				>
-					{/* Title */}
-					<h2
-						className='text-3xl font-extrabold text-center'
-						style={{ color: COLORS.primary }}
-					>
-						🎁 Register on Rainbet & Win Prizes!
-					</h2>
+        {/* STREAM SCHEDULE */}
+        <section className="container px-6 mx-auto my-20">
+          <h2 className="mb-8 text-3xl font-bold text-center text-red-500">📅 Stream Schedule</h2>
+          <div className="grid justify-center grid-cols-2 gap-6 md:grid-cols-4">
+            {["Thu", "Fri", "Sat", "Sun"].map((day) => (
+              <div
+                key={day}
+                className="flex flex-col items-center p-6 transition-transform border border-red-600 shadow bg-gray-900/50 rounded-2xl hover:scale-105"
+              >
+                <Calendar className="w-6 h-6 mb-2 text-red-500" />
+                <p className="font-semibold text-red-300">{day}</p>
+                <p className="text-sm text-gray-300">8:30pm CST</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
 
-					{/* Description */}
-					<p
-						className='text-lg font-medium text-center'
-						style={{ color: COLORS.dark }}
-					>
-						Use the code{" "}
-						<span className='font-extrabold underline'>LIKETHACHEESE</span> when
-						registering to be eligible for prizes from the leaderboard.
-					</p>
-
-					{/* Countdown */}
-					<div className='flex flex-wrap justify-center gap-3'>
-						{["Days", "Hours", "Minutes", "Seconds"].map((label, idx) => {
-							const timeParts = timeLeft.split(" : ");
-							const value =
-								timeParts.length === 4 ? timeParts[idx].slice(0, -1) : "--";
-
-							return (
-								<div
-									key={label}
-									className='flex flex-col items-center justify-center rounded-full px-4 py-3 min-w-[60px] shadow-sm transition-transform hover:scale-105'
-									style={{
-										background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.accent})`,
-										color: COLORS.light,
-									}}
-								>
-									<span className='text-2xl font-bold'>{value}</span>
-									<span className='mt-1 text-xs font-semibold'>{label}</span>
-								</div>
-							);
-						})}
-					</div>
-
-					{/* Register Button */}
-					<Button
-						size='lg'
-						className='mt-6 transition-transform shadow-lg hover:scale-105'
-						style={{ backgroundColor: COLORS.dark, color: COLORS.light }}
-						asChild
-					>
-						<a
-							href='https://rainbet.com/?r=LikeThaCheese'
-							target='_blank'
-							rel='noreferrer'
-						>
-							Register Now
-						</a>
-					</Button>
-				</section>
-				{/* Bonus Section */}
-				<section className='max-w-6xl px-6 mx-auto my-20'>
-					<div
-						className='relative p-10 text-center border-4 shadow-xl rounded-3xl'
-						style={{
-							borderColor: COLORS.primary,
-							backgroundColor: COLORS.light,
-						}}
-					>
-						{/* Ribbon */}
-						<div className='absolute top-0 left-0 px-4 py-1 text-sm font-bold text-white bg-red-600 shadow-md rounded-tr-2xl rounded-bl-2xl'>
-							Exclusive Offer
-						</div>
-
-						{/* Title */}
-						<h2
-							className='mb-4 text-4xl font-extrabold'
-							style={{ color: COLORS.primary }}
-						>
-							💰 10% Deposit Bonus
-						</h2>
-
-						{/* Subtitle */}
-						<p
-							className='mb-8 text-lg font-medium'
-							style={{ color: COLORS.dark }}
-						>
-							Deposit with code{" "}
-							<span
-								className='px-3 py-1 font-bold text-white rounded-lg'
-								style={{ backgroundColor: COLORS.primary }}
-							>
-								LIKETHACHEESE
-							</span>{" "}
-							and earn <strong>10% cashback up to $100</strong>.
-						</p>
-
-						{/* Card Content */}
-						<div
-							className='max-w-xl p-6 mx-auto mb-8 shadow-inner rounded-2xl'
-							style={{
-								background: `linear-gradient(135deg, ${COLORS.accent}40, ${COLORS.primary}25)`,
-								border: `2px dashed ${COLORS.primary}`,
-							}}
-						>
-							<p
-								className='text-base font-medium'
-								style={{ color: COLORS.dark }}
-							>
-								After depositing, click below to verify and claim your bonus
-								directly in our Discord community 🎉
-							</p>
-						</div>
-
-						{/* CTA */}
-						<Button
-							size='lg'
-							className='px-8 py-4 text-lg font-bold transition-transform shadow-lg rounded-xl hover:scale-105'
-							style={{
-								backgroundColor: COLORS.primary,
-								color: COLORS.light,
-							}}
-							asChild
-						>
-							<a
-								href='https://discord.gg/s7hgvGGaV4' // replace with your invite
-								target='_blank'
-								rel='noreferrer'
-							>
-								🎁 Claim Bonus on Discord
-							</a>
-						</Button>
-					</div>
-				</section>
-
-				{/* Leaderboard */}
-				<section className='container py-16'>
-					<div className='flex items-center justify-between mb-8'>
-						<div className='flex items-center gap-2'>
-							<Crown className='w-6 h-6' style={{ color: COLORS.primary }} />
-							<h2 className='text-2xl font-bold'>Monthly Leaderboard</h2>
-						</div>
-						<Button
-							variant='outline'
-							size='sm'
-							className='hover:bg-[#d7590b] hover:text-white'
-							style={{
-								borderColor: COLORS.primary,
-								color: COLORS.primary,
-								backgroundColor: COLORS.light,
-							}}
-							asChild
-						>
-							<Link to='/leaderboard' className='flex items-center gap-1'>
-								View Full Leaderboard <ArrowRight className='w-4 h-4' />
-							</Link>
-						</Button>
-					</div>
-					<LeaderboardTable period='monthly' data={topLeaderboard} />
-				</section>
-
-				{/* Features */}
-				<section className='max-w-6xl px-6 py-16 mx-auto'>
-					<h2
-						className='mb-12 text-4xl font-bold text-center'
-						style={{ color: COLORS.dark }}
-					>
-						What We Offer
-					</h2>
-					<div className='grid grid-cols-1 gap-10 sm:grid-cols-3'>
-						{[
-							{
-								icon: (
-									<Dices
-										className='w-12 h-12 animate-pulse'
-										style={{ color: COLORS.primary }}
-									/>
-								),
-								title: "Exciting Gambling Streams",
-								description:
-									"Watch thrilling slot sessions, casino games, and big win moments with LikeThaCheese on Rainbet.",
-							},
-							{
-								icon: (
-									<Users
-										className='w-12 h-12 animate-pulse'
-										style={{ color: COLORS.primary }}
-									/>
-								),
-								title: "Slot Call System",
-								description:
-									"Suggest slots for LikeThaCheese to play during streams and see your suggestions come to life.",
-							},
-							{
-								icon: (
-									<Gift
-										className='w-12 h-12 animate-pulse'
-										style={{ color: COLORS.primary }}
-									/>
-								),
-								title: "Regular Giveaways",
-								description:
-									"Participate in frequent giveaways for a chance to win cash, gaming gear, and more.",
-							},
-						].map(({ icon, title, description }) => (
-							<div
-								key={title}
-								className='flex flex-col items-center rounded-3xl p-8 shadow-lg hover:scale-[1.05] transition-transform'
-								style={{
-									backgroundColor: COLORS.light,
-									border: `2px solid ${COLORS.primary}`,
-								}}
-							>
-								<div
-									className='flex items-center justify-center w-20 h-20 mb-6 rounded-full'
-									style={{
-										backgroundColor: `${COLORS.accent}50`,
-										border: `2px solid ${COLORS.primary}`,
-									}}
-								>
-									{icon}
-								</div>
-								<h3
-									className='mb-3 text-xl font-semibold'
-									style={{ color: COLORS.primary }}
-								>
-									{title}
-								</h3>
-								<p className='text-center' style={{ color: COLORS.dark }}>
-									{description}
-								</p>
-							</div>
-						))}
-					</div>
-				</section>
-
-				{/* Schedule */}
-				<section className='max-w-5xl px-6 py-16 mx-auto'>
-					<h2
-						className='mb-8 text-4xl font-bold text-center'
-						style={{ color: COLORS.dark }}
-					>
-						📅 Stream Schedule
-					</h2>
-					<p
-						className='max-w-xl mx-auto mb-10 text-center'
-						style={{ color: COLORS.dark }}
-					>
-						LikeThaCheese goes live <strong>every day</strong> — join the fun
-						anytime!
-					</p>
-
-					<div className='flex flex-col gap-4 sm:hidden'>
-						{[
-							"Monday",
-							"Tuesday",
-							"Wednesday",
-							"Thursday",
-							"Friday",
-							"Saturday",
-							"Sunday",
-						].map((day) => (
-							<div
-								key={day}
-								className='flex items-center justify-between p-4 shadow-md rounded-xl'
-								style={{
-									backgroundColor: COLORS.light,
-									border: `2px solid ${COLORS.primary}`,
-								}}
-							>
-								<span
-									className='font-semibold'
-									style={{ color: COLORS.primary }}
-								>
-									{day}
-								</span>
-								<span style={{ color: COLORS.dark }}>7:30pm EST</span>
-							</div>
-						))}
-					</div>
-
-					<div className='flex justify-center mt-12'>
-						<Button
-							size='lg'
-							className='transition transform shadow-lg hover:scale-105'
-							style={{ backgroundColor: COLORS.primary, color: COLORS.light }}
-							asChild
-						>
-							<a
-								href='https://kick.com/LikeThaCheese'
-								target='_blank'
-								rel='noreferrer'
-							>
-								Watch Live on Kick
-							</a>
-						</Button>
-					</div>
-				</section>
-			</main>
-
-			<Footer />
-		</div>
-	);
+      <Footer />
+    </div>
+  );
 }
 
 export default HomePage;

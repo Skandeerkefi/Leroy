@@ -25,15 +25,16 @@ interface LeaderboardTableProps {
 
 // Updated prizes: weekly only has 1st place with "W. W. W."
 const PRIZES: Record<LeaderboardPeriod, Record<number, string | number>> = {
-	monthly: { 1: 150, 2: 75, 3: 25 },
+	monthly: { 1: 400, 2: 150, 3: 50 },
 	weekly: { 1: "W. W. W." },
 };
 
+// Dark Red / Black / White theme
 const COLORS = {
-	primary: "#d7590b",
-	accent: "#fcc63f",
-	dark: "#6f3504",
-	light: "#fbde96",
+	primary: "#b91c1c", // deep red
+	accent: "#f87171", // lighter red accent
+	dark: "#111111", // dark background
+	light: "#f5f5f5", // white/gray for readability
 };
 
 export function LeaderboardTable({ period, data }: LeaderboardTableProps) {
@@ -47,40 +48,40 @@ export function LeaderboardTable({ period, data }: LeaderboardTableProps) {
 
 	return (
 		<div
-			className='overflow-x-auto border-4 shadow-lg rounded-2xl'
+			className='overflow-x-auto border-4 shadow-xl rounded-2xl'
 			style={{
 				borderColor: COLORS.primary,
-				boxShadow: `0 0 12px ${COLORS.primary}`,
+				boxShadow: `0 0 15px ${COLORS.primary}`,
 				backgroundColor: COLORS.dark,
 			}}
 		>
-			<div className='bg-black/50 backdrop-blur-sm'>
+			<div className='bg-black/60 backdrop-blur-sm'>
 				<Table className='min-w-full'>
 					<TableHeader>
 						<TableRow
 							className='border-b'
-							style={{ borderColor: `${COLORS.accent}33` }}
+							style={{ borderColor: `${COLORS.accent}55` }}
 						>
 							<TableHead
-								className='w-16 py-3 pl-6 font-semibold tracking-wide text-left'
+								className='w-16 py-3 pl-6 font-semibold tracking-wide text-left uppercase'
 								style={{ color: COLORS.accent }}
 							>
 								Rank
 							</TableHead>
 							<TableHead
-								className='py-3 pl-6 font-semibold tracking-wide text-left'
+								className='py-3 pl-6 font-semibold tracking-wide text-left uppercase'
 								style={{ color: COLORS.light }}
 							>
 								Player
 							</TableHead>
 							<TableHead
-								className='py-3 pr-6 font-semibold tracking-wide text-right'
+								className='py-3 pr-6 font-semibold tracking-wide text-right uppercase'
 								style={{ color: COLORS.accent }}
 							>
 								Wager
 							</TableHead>
 							<TableHead
-								className='py-3 pr-6 font-semibold tracking-wide text-right'
+								className='py-3 pr-6 font-semibold tracking-wide text-right uppercase'
 								style={{ color: COLORS.accent }}
 							>
 								Prize
@@ -95,7 +96,7 @@ export function LeaderboardTable({ period, data }: LeaderboardTableProps) {
 							return (
 								<TableRow
 									key={player.username}
-									className={`border-b cursor-default`}
+									className='transition-colors border-b cursor-default hover:bg-red-900/20'
 									style={{
 										borderColor: `${COLORS.accent}33`,
 										backgroundColor: player.isFeatured
@@ -111,10 +112,10 @@ export function LeaderboardTable({ period, data }: LeaderboardTableProps) {
 											<Crown
 												className={`inline-block h-5 w-5 ${
 													player.rank === 1
-														? "text-[#fcc63f]"
+														? "text-red-500"
 														: player.rank === 2
-														? "text-[#d7590b]"
-														: "text-[#6f3504]"
+														? "text-red-400"
+														: "text-red-700"
 												}`}
 												aria-label={`Rank ${player.rank}`}
 											/>
@@ -133,8 +134,8 @@ export function LeaderboardTable({ period, data }: LeaderboardTableProps) {
 												variant='outline'
 												className='ml-2 select-none'
 												style={{
-													color: COLORS.primary,
-													borderColor: COLORS.primary,
+													color: COLORS.accent,
+													borderColor: COLORS.accent,
 												}}
 											>
 												Streamer

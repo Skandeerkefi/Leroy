@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-const API_KEY = "p6AFHUk45kWl00jB5upCA2ldKCrdsTsy";
+const API_KEY = "AatTfi3Nf7UrZ6NB5jLFFuPLayT0EpR9";
 const API_URL = "https://services.rainbet.com/v1/external/affiliates";
 
 function getDateRange(period: "weekly" | "monthly") {

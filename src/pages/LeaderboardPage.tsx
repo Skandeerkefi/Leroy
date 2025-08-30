@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
 import {
 	useLeaderboardStore,
 	LeaderboardPlayer,
-	LeaderboardPeriod,
 } from "@/store/useLeaderboardStore";
-import { Crown, Info, Loader2, Trophy, Award, Medal, Sparkles } from "lucide-react";
+import { Crown, Info, Loader2, Trophy, Award, Medal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	Tooltip,
@@ -17,85 +16,39 @@ import {
 } from "@/components/ui/tooltip";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import GraphicalBackground from "@/components/GraphicalBackground";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuthStore } from "@/store/useAuthStore";
 
-// 🟠 replace with your actual auth hook/store
-import { useAuthStore } from "@/store/useAuthStore"; 
-
+// Dark Red / Black / White palette
 const COLORS = {
-	primary: "#d7590b",
-	accent: "#fcc63f",
-	dark: "#6f3504",
-	light: "#fbde96",
+	primary: "#b91c1c",
+	accent: "#f87171",
+	dark: "#111111",
+	light: "#f5f5f5",
 };
 
 function LeaderboardPage() {
-	const { leaderboard, period, setPeriod, fetchLeaderboard, isLoading, error } =
+	const { leaderboard, fetchLeaderboard, isLoading, error } =
 		useLeaderboardStore();
-	const { user } = useAuthStore(); // 🟠 current logged-in user
+	const { user } = useAuthStore();
 
-	// ⏳ time left countdown
-	const [timeLeft, setTimeLeft] = useState<string>("");
+	const [timeLeft, setTimeLeft] = useState("");
 
-	// 🎲 picked winner (admin only)
-	const [pickedWinner, setPickedWinner] = useState<LeaderboardPlayer | null>(null);
-
+	// fetch leaderboard
 	useEffect(() => {
 		fetchLeaderboard();
-	}, [period, fetchLeaderboard]);
+	}, [fetchLeaderboard]);
 
-	// compute current date range depending on period
-	const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
-		start: "",
-		end: "",
-	});
-
+	// Monthly countdown
 	useEffect(() => {
-		const fetchRange = () => {
+		const updateCountdown = () => {
 			const now = new Date();
+			const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+			nextMonth.setHours(0, 0, 0, 0);
 
-			if (period === "monthly") {
-				const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-				startDate.setHours(0, 0, 0, 0);
-
-				const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-				endDate.setHours(23, 59, 59, 999);
-
-				setDateRange({
-					start: startDate.toISOString().split("T")[0],
-					end: endDate.toISOString().split("T")[0],
-				});
-			} else if (period === "weekly") {
-				const baseStart = new Date("2025-08-17T00:00:00Z");
-				const baseEnd = new Date("2025-08-24T23:59:59Z");
-
-				while (now > baseEnd) {
-					baseStart.setDate(baseStart.getDate() + 7);
-					baseEnd.setDate(baseEnd.getDate() + 7);
-				}
-
-				setDateRange({
-					start: baseStart.toISOString().split("T")[0],
-					end: baseEnd.toISOString().split("T")[0],
-				});
-			}
-		};
-
-		fetchRange();
-	}, [period]);
-
-	// countdown ticker
-	useEffect(() => {
-		if (!dateRange.end) return;
-
-		const interval = setInterval(() => {
-			const endDate = new Date(dateRange.end + "T23:59:59");
-			const now = new Date();
-			const diff = endDate.getTime() - now.getTime();
+			const diff = nextMonth.getTime() - now.getTime();
 
 			if (diff <= 0) {
-				setTimeLeft("Leaderboard period has ended.");
-				clearInterval(interval);
+				setTimeLeft("Leaderboard period ended");
 				return;
 			}
 
@@ -104,21 +57,22 @@ function LeaderboardPage() {
 			const minutes = Math.floor((diff / (1000 * 60)) % 60);
 			const seconds = Math.floor((diff / 1000) % 60);
 
-			setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s remaining`);
-		}, 1000);
+			setTimeLeft(
+				`${days.toString().padStart(2, "0")}d ${hours
+					.toString()
+					.padStart(2, "0")}h ${minutes.toString().padStart(2, "0")}m ${seconds
+					.toString()
+					.padStart(2, "0")}s remaining`
+			);
+		};
 
+		updateCountdown();
+		const interval = setInterval(updateCountdown, 1000);
 		return () => clearInterval(interval);
-	}, [dateRange]);
-
-	// 🎲 Pick random winner from weekly leaderboard
-	const handlePickWinner = () => {
-		if (leaderboard.length === 0) return;
-		const randomIndex = Math.floor(Math.random() * leaderboard.length);
-		setPickedWinner(leaderboard[randomIndex]);
-	};
+	}, []);
 
 	return (
-		<div className='relative flex flex-col min-h-screen text-white'>
+		<div className='relative flex flex-col min-h-screen text-white bg-black'>
 			<GraphicalBackground />
 			<Navbar />
 
@@ -150,7 +104,7 @@ function LeaderboardPage() {
 								className='max-w-xs p-3 text-sm border rounded-md shadow-lg'
 								style={{
 									backgroundColor: COLORS.dark,
-									borderColor: COLORS.accent,
+									borderColor: COLORS.primary,
 									color: COLORS.light,
 								}}
 							>
@@ -160,28 +114,6 @@ function LeaderboardPage() {
 						</Tooltip>
 					</TooltipProvider>
 				</div>
-
-				{/* Tabs */}
-				<Tabs
-					value={period}
-					onValueChange={(val) => setPeriod(val as LeaderboardPeriod)}
-					className='mb-8'
-				>
-					<TabsList className='grid w-full grid-cols-2 bg-[#693806] p-1 rounded-2xl shadow-md'>
-						<TabsTrigger
-							value='monthly'
-							className='text-white data-[state=active]:bg-[#AF2D03] data-[state=active]:text-white rounded-xl transition-colors'
-						>
-							Monthly
-						</TabsTrigger>
-						<TabsTrigger
-							value='weekly'
-							className='text-white data-[state=active]:bg-[#EA6D0C] data-[state=active]:text-white rounded-xl transition-colors'
-						>
-							Weekly
-						</TabsTrigger>
-					</TabsList>
-				</Tabs>
 
 				{/* Error */}
 				{error && (
@@ -213,24 +145,21 @@ function LeaderboardPage() {
 							<>
 								<RewardCard
 									position='2nd Place'
-									reward={period === "monthly" ? "$75" : "$100"}
+									reward='$75'
 									player={leaderboard[1]}
-									icon={<Award className='text-yellow-400 w-9 h-9' />}
-									lightBg
+									icon={<Award className='text-red-400 w-9 h-9' />}
 								/>
 								<RewardCard
 									position='1st Place'
-									reward={period === "monthly" ? "$150" : "$150"}
+									reward='$150'
 									player={leaderboard[0]}
-									icon={<Trophy className='w-10 h-10 text-orange-300' />}
-									lightBg
+									icon={<Trophy className='w-10 h-10 text-red-500' />}
 								/>
 								<RewardCard
 									position='3rd Place'
-									reward={period === "monthly" ? "$25" : "$50"}
+									reward='$25'
 									player={leaderboard[2]}
-									icon={<Medal className='w-8 h-8 text-yellow-500' />}
-									lightBg
+									icon={<Medal className='w-8 h-8 text-red-600' />}
 								/>
 							</>
 						) : (
@@ -248,17 +177,11 @@ function LeaderboardPage() {
 							className='inline-block px-8 py-2 text-2xl font-semibold text-center border-2 rounded-md'
 							style={{ borderColor: COLORS.primary, color: COLORS.primary }}
 						>
-							{period === "monthly" ? "Monthly" : "Weekly"} Leaderboard
+							Monthly Leaderboard
 						</h2>
 						<p
-							className='mt-2 text-sm select-none'
-							style={{ color: "#EA6D0C" }}
-						>
-							Period: {dateRange.start} → {dateRange.end}
-						</p>
-						<p
 							className='mt-1 text-sm select-none'
-							style={{ color: "#EA6D0C" }}
+							style={{ color: COLORS.accent }}
 						>
 							{timeLeft}
 						</p>
@@ -272,33 +195,8 @@ function LeaderboardPage() {
 							/>
 						</div>
 					) : (
-						<LeaderboardTable period={period} data={leaderboard} />
+						<LeaderboardTable period='monthly' data={leaderboard} />
 					)}
-
-					{/* 🎲 Admin Winner Picker */}
-					{user?.role === "admin" &&
-						period === "weekly" &&
-						leaderboard.length > 0 && (
-							<div className='mt-8 text-center'>
-								<Button
-									onClick={handlePickWinner}
-									className='bg-[#AF2D03] hover:bg-[#6f3504] text-white font-semibold flex items-center gap-2'
-								>
-									<Sparkles className='w-5 h-5' /> Pick Random Winner
-								</Button>
-
-								{pickedWinner && (
-									<div className='mt-4 p-4 border rounded-xl shadow-md bg-[#693806]'>
-										<p className='text-lg font-bold text-[#EA6D0C]'>
-											🎉 Winner: {pickedWinner.username}
-										</p>
-										<p className='text-sm text-gray-300'>
-											Wager: ${pickedWinner.wager.toLocaleString()}
-										</p>
-									</div>
-								)}
-							</div>
-						)}
 				</section>
 			</main>
 
@@ -312,29 +210,22 @@ interface RewardCardProps {
 	reward: string;
 	player?: LeaderboardPlayer;
 	icon?: React.ReactNode;
-	lightBg?: boolean;
 }
 
-function RewardCard({
-	position,
-	reward,
-	player,
-	icon,
-	lightBg = false,
-}: RewardCardProps) {
+function RewardCard({ position, reward, player, icon }: RewardCardProps) {
 	return (
 		<div
-			className={`flex flex-col h-full overflow-hidden rounded-xl shadow-lg border`}
+			className='flex flex-col h-full overflow-hidden border shadow-lg rounded-xl'
 			style={{
 				borderColor: COLORS.primary,
-				background: lightBg ? `${COLORS.light}33` : undefined,
+				background: "#1a1a1a",
 				color: COLORS.light,
 			}}
 		>
 			<div
-				className={`h-2 bg-gradient-to-r`}
+				className='h-2 bg-gradient-to-r'
 				style={{
-					background: `linear-gradient(to right, ${COLORS.dark}, ${COLORS.primary})`,
+					background: `linear-gradient(to right, ${COLORS.primary}, ${COLORS.accent})`,
 				}}
 			/>
 			<div className='flex flex-col items-center flex-grow p-6 text-center'>
@@ -348,19 +239,19 @@ function RewardCard({
 
 				{player ? (
 					<>
-						<p className='text-lg font-semibold text-black'>
+						<p className='text-lg font-semibold text-white'>
 							{player.username}
 						</p>
-						<p className='text-lg font-medium text-black'>
-							$ {player.wager.toLocaleString()}
+						<p className='text-lg font-medium text-white'>
+							${player.wager.toLocaleString()}
 						</p>
 						<a
-							href='https://discord.gg/s7hgvGGaV4'
+							href='https://discord.gg/53rN2TwQv6'
 							target='_blank'
 							rel='noreferrer'
 							className='w-full mt-6'
 						>
-							<Button className='w-full bg-[#d7590b] hover:bg-[#6f3504] text-black font-semibold'>
+							<Button className='w-full font-semibold text-white bg-red-700 hover:bg-red-900'>
 								Claim Prize
 							</Button>
 						</a>

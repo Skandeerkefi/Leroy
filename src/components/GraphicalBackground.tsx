@@ -16,6 +16,13 @@ export function GraphicalBackground() {
 		resizeCanvas();
 		window.addEventListener("resize", resizeCanvas);
 
+		// 🎨 Dark red / black / white palette
+		const colors = [
+			"rgba(185, 28, 28,", // deep red
+			"rgba(248, 113, 113,", // accent red
+			"rgba(255, 255, 255,", // white accents
+		];
+
 		interface Particle {
 			x: number;
 			y: number;
@@ -27,13 +34,7 @@ export function GraphicalBackground() {
 		}
 
 		const particles: Particle[] = [];
-		const particleCount = 50; // increased particle count
-		const colors = [
-			"rgba(252, 198, 63,", // cheese yellow
-			"rgba(215, 89, 11,", // cheddar orange
-			"rgba(251, 222, 150,", // light cheese
-			"rgba(111, 53, 4,", // crust brown
-		];
+		const particleCount = 60;
 
 		for (let i = 0; i < particleCount; i++) {
 			const color = colors[Math.floor(Math.random() * colors.length)];
@@ -61,55 +62,29 @@ export function GraphicalBackground() {
 			image: HTMLImageElement;
 		}
 
-		const cheeseSources = [
-			"https://i.ibb.co/TBzNFcMz/Capture-d-cran-2025-08-17-030301-removebg-preview.png",
-			"https://i.ibb.co/KjZCtD6t/Capture-d-cran-2025-08-17-030335-removebg-preview.png",
-		];
-		const cheeseImages: HTMLImageElement[] = cheeseSources.map((src) => {
-			const img = new Image();
-			img.src = src;
-			return img;
-		});
+		// Spartan logo
+		const spartanImg = new Image();
+		spartanImg.src =
+			"https://i.ibb.co/5x447Kf5/spartan-race-logo-png-seeklogo-483730-removebg-preview.png";
 
-		const cheeses: FloatingItem[] = [];
-		const cheeseCount = 40; // more cheese
+		const items: FloatingItem[] = [];
+		const itemCount = 25; // fewer but larger logos
 
-		// Helper to check if a new cheese overlaps existing ones
-		const isFarEnough = (x: number, y: number, size: number) => {
-			return !cheeses.some(
-				(c) => Math.hypot(c.x - x, c.y - y) < (c.size + size) * 0.8 // minimum distance
-			);
-		};
+		for (let i = 0; i < itemCount; i++) {
+			const layer = Math.floor(Math.random() * 3);
+			const baseSize = [60, 100, 150][layer];
 
-		for (let i = 0; i < cheeseCount; i++) {
-			const layer = Math.floor(Math.random() * 3); // 0 = far, 2 = close
-			const baseSize = [40, 70, 110][layer];
-			const cheeseImg =
-				cheeseImages[Math.floor(Math.random() * cheeseImages.length)];
-
-			let x = Math.random() * canvas.width;
-			let y = Math.random() * canvas.height;
-			let size = baseSize + Math.random() * 30;
-
-			let tries = 0;
-			while (!isFarEnough(x, y, size) && tries < 50) {
-				// prevent overlapping
-				x = Math.random() * canvas.width;
-				y = Math.random() * canvas.height;
-				tries++;
-			}
-
-			cheeses.push({
-				x,
-				y,
-				size,
+			items.push({
+				x: Math.random() * canvas.width,
+				y: Math.random() * canvas.height,
+				size: baseSize + Math.random() * 30,
 				speedX: (Math.random() - 0.5) * (0.1 + layer * 0.05),
 				speedY: (Math.random() - 0.5) * (0.1 + layer * 0.05),
 				rotation: Math.random() * Math.PI * 2,
 				rotationSpeed: (Math.random() - 0.5) * 0.002,
 				layer,
-				opacity: 0.4 + layer * 0.3,
-				image: cheeseImg,
+				opacity: 0.3 + layer * 0.3,
+				image: spartanImg,
 			});
 		}
 
@@ -119,9 +94,11 @@ export function GraphicalBackground() {
 		const render = () => {
 			time += 0.01;
 
-			ctx.fillStyle = "rgba(251, 222, 150, 0.2)";
+			// Background overlay (black w/ subtle tint)
+			ctx.fillStyle = "rgba(17, 17, 17, 0.8)";
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+			// Particles (small glowing dots)
 			particles.forEach((p) => {
 				p.x += p.speedX;
 				p.y += p.speedY;
@@ -137,34 +114,37 @@ export function GraphicalBackground() {
 				ctx.fill();
 			});
 
-			cheeses.forEach((cheese, idx) => {
-				const layerSpeed = 0.3 + cheese.layer * 0.2;
+			// Floating Spartan logos
+			items.forEach((item, idx) => {
+				const layerSpeed = 0.3 + item.layer * 0.2;
 
-				cheese.x += cheese.speedX * layerSpeed + Math.sin(time + idx) * 0.5;
-				cheese.y += cheese.speedY * layerSpeed + Math.cos(time + idx) * 0.5;
-				cheese.rotation += cheese.rotationSpeed + Math.sin(time + idx) * 0.005;
+				item.x += item.speedX * layerSpeed + Math.sin(time + idx) * 0.3;
+				item.y += item.speedY * layerSpeed + Math.cos(time + idx) * 0.3;
+				item.rotation += item.rotationSpeed;
 
-				const scale = 0.9 + Math.sin(time + idx) * 0.1;
+				const scale = 0.95 + Math.sin(time + idx) * 0.05;
 
-				if (cheese.x > canvas.width) cheese.x = -cheese.size;
-				if (cheese.x < -cheese.size) cheese.x = canvas.width;
-				if (cheese.y > canvas.height) cheese.y = -cheese.size;
-				if (cheese.y < -cheese.size) cheese.y = canvas.height;
+				// Wrap around screen
+				if (item.x > canvas.width) item.x = -item.size;
+				if (item.x < -item.size) item.x = canvas.width;
+				if (item.y > canvas.height) item.y = -item.size;
+				if (item.y < -item.size) item.y = canvas.height;
 
+				// Draw logo
 				ctx.save();
-				ctx.globalAlpha = cheese.opacity;
-				ctx.shadowColor = "rgba(111,53,4,0.5)";
-				ctx.shadowBlur = 15;
+				ctx.globalAlpha = item.opacity;
+				ctx.shadowColor = "rgba(185,28,28,0.6)"; // red glow
+				ctx.shadowBlur = 20;
 
-				ctx.translate(cheese.x + cheese.size / 2, cheese.y + cheese.size / 2);
-				ctx.rotate(cheese.rotation);
+				ctx.translate(item.x + item.size / 2, item.y + item.size / 2);
+				ctx.rotate(item.rotation);
 				ctx.scale(scale, scale);
 				ctx.drawImage(
-					cheese.image,
-					-cheese.size / 2,
-					-cheese.size / 2,
-					cheese.size,
-					cheese.size
+					item.image,
+					-item.size / 2,
+					-item.size / 2,
+					item.size,
+					item.size
 				);
 				ctx.restore();
 			});
@@ -172,14 +152,7 @@ export function GraphicalBackground() {
 			animationFrameId = requestAnimationFrame(render);
 		};
 
-		Promise.all(
-			cheeseImages.map(
-				(img) =>
-					new Promise((resolve) => {
-						img.onload = resolve;
-					})
-			)
-		).then(() => render());
+		spartanImg.onload = () => render();
 
 		return () => {
 			window.removeEventListener("resize", resizeCanvas);
