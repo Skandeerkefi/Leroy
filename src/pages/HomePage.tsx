@@ -4,10 +4,10 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { Link } from "react-router-dom";
-import { Crown, ArrowRight, Calendar, Gift } from "lucide-react";
+import { Crown, ArrowRight, Calendar, Gift, Play } from "lucide-react";
 import { useLeaderboardStore } from "@/store/useLeaderboardStore";
 import GraphicalBackground from "@/components/GraphicalBackground";
-import VideoSection from "@/components/VideoSection";
+
 // Dark Red / Black / White Theme
 const COLORS = {
   primary: "#b91c1c", // dark red
@@ -18,50 +18,69 @@ const COLORS = {
 };
 
 function HomePage() {
-  const { leaderboard, fetchLeaderboard } = useLeaderboardStore();
-  const topLeaderboard = Array.isArray(leaderboard)
-    ? leaderboard.slice(0, 5)
-    : [];
+	const { leaderboard, fetchLeaderboard } = useLeaderboardStore();
+	const topLeaderboard = Array.isArray(leaderboard)
+		? leaderboard.slice(0, 5)
+		: [];
 
-  // Countdown state
-  const [timeLeft, setTimeLeft] = useState("00:00:00:00");
+	// Countdown state
+	const [timeLeft, setTimeLeft] = useState("00:00:00:00");
+	// 🎥 YOUTUBE CLIPS
+	const [clips, setClips] = useState<any[]>([]);
+	useEffect(() => {
+		if (!leaderboard || leaderboard.length === 0) fetchLeaderboard();
 
-  useEffect(() => {
-    if (!leaderboard || leaderboard.length === 0) fetchLeaderboard();
+		const updateCountdown = () => {
+			const now = new Date();
+			const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+			nextMonth.setHours(0, 0, 0, 0);
 
-    const updateCountdown = () => {
-      const now = new Date();
-      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-      nextMonth.setHours(0, 0, 0, 0);
+			const diff = nextMonth.getTime() - now.getTime();
 
-      const diff = nextMonth.getTime() - now.getTime();
+			if (diff <= 0) {
+				setTimeLeft("00:00:00:00");
+				return;
+			}
 
-      if (diff <= 0) {
-        setTimeLeft("00:00:00:00");
-        return;
-      }
+			const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+			const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+			const minutes = Math.floor((diff / (1000 * 60)) % 60);
+			const seconds = Math.floor((diff / 1000) % 60);
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
+			setTimeLeft(
+				`${days.toString().padStart(2, "0")}:${hours
+					.toString()
+					.padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds
+					.toString()
+					.padStart(2, "0")}`
+			);
+		};
 
-      setTimeLeft(
-        `${days.toString().padStart(2, "0")}:${hours
-          .toString()
-          .padStart(2, "0")}:${minutes
-          .toString()
-          .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
-      );
-    };
+		updateCountdown();
+		const interval = setInterval(updateCountdown, 1000);
 
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
+		return () => clearInterval(interval);
+	}, [leaderboard, fetchLeaderboard]);
+	// 🎥 Fetch Last 4 YouTube Clips
+	useEffect(() => {
+		const fetchClips = async () => {
+			try {
+				const res = await fetch(
+					`https://www.googleapis.com/youtube/v3/search?key=AIzaSyDWauiPq7gD_4DshUhGaebJKXtzZDLKcBs&channelId=UCKfcuan3y_mUaszxyUMAzNQ&part=snippet,id&order=date&maxResults=4`
+				);
+				const data = await res.json();
+				const vids =
+					data.items?.filter((item: any) => item.id.kind === "youtube#video") ||
+					[];
+				setClips(vids);
+			} catch (error) {
+				console.error("Error fetching YouTube videos", error);
+			}
+		};
+		fetchClips();
+	}, []);
 
-    return () => clearInterval(interval);
-  }, [leaderboard, fetchLeaderboard]);
-
-  return (
+	return (
 		<div className='relative flex flex-col min-h-screen text-white bg-black'>
 			<GraphicalBackground />
 			<Navbar />
@@ -164,7 +183,32 @@ function HomePage() {
 					</div>
 					<LeaderboardTable period='monthly' data={topLeaderboard} />
 				</section>
-				{/* <VideoSection /> */}
+				{/* === CLIPS SECTION === */}
+				<section className='container px-6 mx-auto my-20'>
+					<h2 className='flex items-center justify-center gap-2 mb-8 text-3xl font-bold text-center text-red-500'>
+						<Play className='text-red-500 w-7 h-7' /> Latest Clips
+					</h2>
+					<div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-4'>
+						{clips.map((clip) => (
+							<div
+								key={clip.id.videoId}
+								className='overflow-hidden border border-red-600 shadow-lg rounded-2xl bg-gray-900/60'
+							>
+								<iframe
+									src={`https://www.youtube.com/embed/${clip.id.videoId}`}
+									title={clip.snippet.title}
+									allowFullScreen
+									className='w-full aspect-video'
+								/>
+								<div className='p-3'>
+									<h3 className='text-sm font-semibold text-red-400 line-clamp-2'>
+										{clip.snippet.title}
+									</h3>
+								</div>
+							</div>
+						))}
+					</div>
+				</section>
 				{/* STREAM SCHEDULE */}
 				<section className='container px-6 mx-auto my-20'>
 					<h2 className='mb-8 text-3xl font-bold text-center text-red-500'>
