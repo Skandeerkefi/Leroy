@@ -18,7 +18,7 @@ interface LeaderboardState {
 	fetchLeaderboard: () => Promise<void>;
 }
 
-const API_URL = "http://localhost:3000/api/affiliates";
+const API_URL = "https://leroydata.onrender.com/api/affiliates";
 
 const getDateRange = (
 	period: LeaderboardPeriod
