@@ -87,14 +87,13 @@ function HomePage() {
 
 			<main className='relative z-10 flex-grow'>
 				{/* HERO */}
-				<section className='container flex flex-col-reverse items-center gap-12 px-6 py-20 mx-auto md:flex-row'>
+				<section className='container flex flex-col items-center gap-8 px-4 py-12 mx-auto md:flex-row md:gap-12 md:py-20'>
 					<div className='text-center md:w-1/2 md:text-left'>
-						<h1 className='mb-6 text-5xl font-extrabold tracking-tight text-transparent md:text-6xl bg-gradient-to-r from-red-700 via-red-500 to-red-700 bg-clip-text'>
+						<h1 className='mb-4 text-4xl font-extrabold tracking-tight text-transparent sm:text-5xl md:text-6xl bg-gradient-to-r from-red-700 via-red-500 to-red-700 bg-clip-text'>
 							LeroyyJenderson
-							<br />
-							Official Kick Stream
+							<br /> Official Kick Stream
 						</h1>
-						<p className='mb-8 text-lg text-gray-300'>
+						<p className='mb-6 text-base text-gray-300 sm:text-lg'>
 							Daily{" "}
 							<span className='font-semibold text-red-400'>
 								gambling thrills
@@ -103,7 +102,7 @@ function HomePage() {
 						</p>
 						<Button
 							size='lg'
-							className='px-8 py-4 font-bold transition-transform bg-red-600 rounded-full shadow-lg hover:bg-red-700 hover:scale-105'
+							className='px-6 py-3 font-bold transition-transform bg-red-600 rounded-full shadow-lg hover:bg-red-700 hover:scale-105'
 							asChild
 						>
 							<a
@@ -115,7 +114,8 @@ function HomePage() {
 							</a>
 						</Button>
 					</div>
-					<div className='overflow-hidden border-4 border-red-600 shadow-2xl md:w-1/2 aspect-video rounded-3xl'>
+					{/* Stream first on mobile */}
+					<div className='w-full overflow-hidden border-2 border-red-600 shadow-xl aspect-video rounded-2xl md:w-1/2'>
 						<iframe
 							src='https://player.kick.com/LeroyyJenderson'
 							frameBorder='0'
@@ -127,32 +127,35 @@ function HomePage() {
 				</section>
 
 				{/* LEADERBOARD PRIZES */}
-				<section className='container mx-auto my-16 text-center'>
-					<h2 className='flex items-center justify-center gap-2 mb-6 text-3xl font-bold text-red-500'>
+				<section className='container px-4 mx-auto my-12 text-center'>
+					<h2 className='flex items-center justify-center gap-2 mb-6 text-2xl font-bold text-red-500 sm:text-3xl'>
 						<Gift className='w-6 h-6 text-red-500' /> Monthly $600 Leaderboard
 					</h2>
-					<div className='flex flex-wrap justify-center gap-6'>
-						<div className='p-6 border border-red-600 shadow-lg w-60 bg-gray-900/70 rounded-2xl'>
-							<h3 className='text-xl font-bold text-red-400'>1st Place</h3>
-							<p className='text-gray-300'>$400</p>
-						</div>
-						<div className='p-6 border border-red-600 shadow-lg w-60 bg-gray-900/70 rounded-2xl'>
-							<h3 className='text-xl font-bold text-red-400'>2nd Place</h3>
-							<p className='text-gray-300'>$150</p>
-						</div>
-						<div className='p-6 border border-red-600 shadow-lg w-60 bg-gray-900/70 rounded-2xl'>
-							<h3 className='text-xl font-bold text-red-400'>3rd Place</h3>
-							<p className='text-gray-300'>$50</p>
-						</div>
+					<div className='flex flex-wrap justify-center gap-4 sm:gap-6'>
+						{[
+							{ place: "1st Place", prize: "$400" },
+							{ place: "2nd Place", prize: "$150" },
+							{ place: "3rd Place", prize: "$50" },
+						].map((item) => (
+							<div
+								key={item.place}
+								className='p-4 w-full max-w-[14rem] border border-red-600 shadow-lg bg-gray-900/70 rounded-2xl sm:p-6'
+							>
+								<h3 className='text-lg font-bold text-red-400 sm:text-xl'>
+									{item.place}
+								</h3>
+								<p className='text-gray-300'>{item.prize}</p>
+							</div>
+						))}
 					</div>
 				</section>
 
 				{/* COUNTDOWN */}
-				<section className='container mx-auto my-16 text-center'>
-					<h2 className='mb-6 text-3xl font-bold text-red-500'>
+				<section className='container px-4 mx-auto my-12 text-center'>
+					<h2 className='mb-6 text-2xl font-bold text-red-500 sm:text-3xl'>
 						⏳ Monthly Countdown
 					</h2>
-					<div className='inline-flex justify-center gap-5 px-12 py-6 font-mono text-3xl border border-red-600 shadow-md bg-gray-900/60 rounded-3xl'>
+					<div className='inline-flex justify-center gap-3 px-6 py-4 font-mono text-2xl border border-red-600 shadow-md bg-gray-900/60 rounded-2xl sm:gap-5 sm:text-3xl sm:px-12 sm:py-6'>
 						{timeLeft.split(":").map((val, i) => (
 							<div key={i} className='flex flex-col items-center'>
 								<span className='font-bold text-red-400'>{val}</span>
@@ -165,15 +168,15 @@ function HomePage() {
 				</section>
 
 				{/* LEADERBOARD TABLE */}
-				<section className='container px-6 mx-auto my-20'>
-					<div className='flex items-center justify-between mb-6'>
-						<h2 className='flex items-center gap-2 text-2xl font-bold'>
+				<section className='container px-4 mx-auto my-16'>
+					<div className='flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between'>
+						<h2 className='flex items-center gap-2 text-xl font-bold sm:text-2xl'>
 							<Crown className='w-6 h-6 text-red-500' /> Top Players
 						</h2>
 						<Button
 							variant='outline'
 							size='sm'
-							className='text-white border-red-500 hover:bg-red-600'
+							className='self-start text-white border-red-500 hover:bg-red-600 sm:self-auto'
 							asChild
 						>
 							<Link to='/leaderboard' className='flex items-center gap-1'>
@@ -181,14 +184,17 @@ function HomePage() {
 							</Link>
 						</Button>
 					</div>
-					<LeaderboardTable period='monthly' data={topLeaderboard} />
+					<div className='overflow-x-auto'>
+						<LeaderboardTable period='monthly' data={topLeaderboard} />
+					</div>
 				</section>
-				{/* === CLIPS SECTION === */}
-				<section className='container px-6 mx-auto my-20'>
-					<h2 className='flex items-center justify-center gap-2 mb-8 text-3xl font-bold text-center text-red-500'>
-						<Play className='text-red-500 w-7 h-7' /> Latest Clips
+
+				{/* CLIPS SECTION */}
+				<section className='container px-4 mx-auto my-16'>
+					<h2 className='flex items-center justify-center gap-2 mb-8 text-2xl font-bold text-center text-red-500 sm:text-3xl'>
+						<Play className='w-6 h-6 text-red-500 sm:w-7 sm:h-7' /> Latest Clips
 					</h2>
-					<div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-4'>
+					<div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
 						{clips.map((clip) => (
 							<div
 								key={clip.id.videoId}
@@ -209,16 +215,17 @@ function HomePage() {
 						))}
 					</div>
 				</section>
+
 				{/* STREAM SCHEDULE */}
-				<section className='container px-6 mx-auto my-20'>
-					<h2 className='mb-8 text-3xl font-bold text-center text-red-500'>
+				<section className='container px-4 mx-auto my-16'>
+					<h2 className='mb-8 text-2xl font-bold text-center text-red-500 sm:text-3xl'>
 						📅 Stream Schedule
 					</h2>
-					<div className='grid justify-center grid-cols-2 gap-6 md:grid-cols-4'>
+					<div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4'>
 						{["Thu", "Fri", "Sat", "Sun"].map((day) => (
 							<div
 								key={day}
-								className='flex flex-col items-center p-6 transition-transform border border-red-600 shadow bg-gray-900/50 rounded-2xl hover:scale-105'
+								className='flex flex-col items-center p-4 transition-transform border border-red-600 shadow bg-gray-900/50 rounded-2xl hover:scale-105 sm:p-6'
 							>
 								<Calendar className='w-6 h-6 mb-2 text-red-500' />
 								<p className='font-semibold text-red-300'>{day}</p>
