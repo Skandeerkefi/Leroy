@@ -164,7 +164,7 @@ function HomePage() {
 					</div>
 					<LeaderboardTable period='monthly' data={topLeaderboard} />
 				</section>
-				<VideoSection />
+				{/* <VideoSection /> */}
 				{/* STREAM SCHEDULE */}
 				<section className='container px-6 mx-auto my-20'>
 					<h2 className='mb-8 text-3xl font-bold text-center text-red-500'>
