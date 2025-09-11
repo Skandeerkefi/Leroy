@@ -125,7 +125,32 @@ function HomePage() {
 						/>
 					</div>
 				</section>
-
+{/* CLIPS SECTION */}
+				<section className='container px-4 mx-auto my-16'>
+					<h2 className='flex items-center justify-center gap-2 mb-8 text-2xl font-bold text-center text-red-500 sm:text-3xl'>
+						<Play className='w-6 h-6 text-red-500 sm:w-7 sm:h-7' /> Latest Clips
+					</h2>
+					<div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+						{clips.map((clip) => (
+							<div
+								key={clip.id.videoId}
+								className='overflow-hidden border border-red-600 shadow-lg rounded-2xl bg-gray-900/60'
+							>
+								<iframe
+									src={`https://www.youtube.com/embed/${clip.id.videoId}`}
+									title={clip.snippet.title}
+									allowFullScreen
+									className='w-full aspect-video'
+								/>
+								<div className='p-3'>
+									<h3 className='text-sm font-semibold text-red-400 line-clamp-2'>
+										{clip.snippet.title}
+									</h3>
+								</div>
+							</div>
+						))}
+					</div>
+				</section>
 				{/* LEADERBOARD PRIZES */}
 				<section className='container px-4 mx-auto my-12 text-center'>
 					<h2 className='flex items-center justify-center gap-2 mb-6 text-2xl font-bold text-red-500 sm:text-3xl'>
@@ -189,32 +214,7 @@ function HomePage() {
 					</div>
 				</section>
 
-				{/* CLIPS SECTION */}
-				<section className='container px-4 mx-auto my-16'>
-					<h2 className='flex items-center justify-center gap-2 mb-8 text-2xl font-bold text-center text-red-500 sm:text-3xl'>
-						<Play className='w-6 h-6 text-red-500 sm:w-7 sm:h-7' /> Latest Clips
-					</h2>
-					<div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-						{clips.map((clip) => (
-							<div
-								key={clip.id.videoId}
-								className='overflow-hidden border border-red-600 shadow-lg rounded-2xl bg-gray-900/60'
-							>
-								<iframe
-									src={`https://www.youtube.com/embed/${clip.id.videoId}`}
-									title={clip.snippet.title}
-									allowFullScreen
-									className='w-full aspect-video'
-								/>
-								<div className='p-3'>
-									<h3 className='text-sm font-semibold text-red-400 line-clamp-2'>
-										{clip.snippet.title}
-									</h3>
-								</div>
-							</div>
-						))}
-					</div>
-				</section>
+				
 
 				{/* STREAM SCHEDULE */}
 				<section className='container px-4 mx-auto my-16'>
