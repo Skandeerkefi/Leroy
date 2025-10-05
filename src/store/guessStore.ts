@@ -3,7 +3,7 @@ import { create } from "zustand";
 import axios from "axios";
 import { Guess, GuessGame } from "./types";
 
-const API_URL = "http://localhost:3000/api/guess";
+const API_URL = "https://leroydata.onrender.com/api/guess";
 
 interface GuessStore {
 	game: GuessGame | null;

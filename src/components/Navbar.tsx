@@ -49,15 +49,20 @@ export function Navbar() {
 			icon: <Crown className='w-5 h-5' />,
 		},
 		{
-			path: "/slot-calls",
-			name: "Slot Calls",
+			path: "/guess-balance",
+			name: "guess-balance",
 			icon: <Users className='w-5 h-5' />,
 		},
-		{
-			path: "/giveaways",
-			name: "Giveaways",
-			icon: <Gift className='w-5 h-5' />,
-		},
+		// Only show manage-guess if user is admin
+		...(user?.role === "admin"
+			? [
+					{
+						path: "/manage-guess",
+						name: "manageguess",
+						icon: <Gift className='w-5 h-5' />,
+					},
+			  ]
+			: []),
 	];
 
 	return (
