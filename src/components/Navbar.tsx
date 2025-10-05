@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Dices, Crown, User, LogOut } from "lucide-react";
+import { Dices, Crown, Users, Gift, User, LogIn, LogOut } from "lucide-react";
 import useMediaQuery from "@/hooks/use-media-query";
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -10,7 +10,6 @@ export function Navbar() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isLive, setIsLive] = useState(false);
 	const [viewerCount, setViewerCount] = useState<number | null>(null);
-
 	const { user, logout } = useAuthStore();
 
 	useEffect(() => {
@@ -20,7 +19,9 @@ export function Navbar() {
 	useEffect(() => {
 		const fetchLiveStatus = async () => {
 			try {
-				const res = await fetch("https://kick.com/api/v2/channels/leroyyjenderson");
+				const res = await fetch(
+					"https://kick.com/api/v2/channels/leroyyjenderson"
+				);
 				const data = await res.json();
 
 				if (data.livestream) {
@@ -46,6 +47,16 @@ export function Navbar() {
 			path: "/leaderboard",
 			name: "Leaderboard",
 			icon: <Crown className='w-5 h-5' />,
+		},
+		{
+			path: "/slot-calls",
+			name: "Slot Calls",
+			icon: <Users className='w-5 h-5' />,
+		},
+		{
+			path: "/giveaways",
+			name: "Giveaways",
+			icon: <Gift className='w-5 h-5' />,
 		},
 	];
 
@@ -86,9 +97,9 @@ export function Navbar() {
 							))}
 						</ul>
 
-						{/* User */}
+						{/* User / Login/Signup */}
 						<div className='flex items-center space-x-5'>
-							{user && (
+							{user ? (
 								<>
 									<Link
 										to='/profile'
@@ -104,6 +115,21 @@ export function Navbar() {
 										<LogOut className='w-5 h-5' />
 										Logout
 									</button>
+								</>
+							) : (
+								<>
+									<Link
+										to='/login'
+										className='flex items-center space-x-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white px-4 py-1.5 rounded-lg font-semibold transition'
+									>
+										<LogIn className='w-5 h-5' /> Login
+									</Link>
+									<Link
+										to='/signup'
+										className='font-semibold text-white transition hover:text-red-400'
+									>
+										Sign Up
+									</Link>
 								</>
 							)}
 						</div>
@@ -188,7 +214,7 @@ export function Navbar() {
 						</ul>
 
 						<div className='mt-auto space-y-4'>
-							{user && (
+							{user ? (
 								<>
 									<Link
 										to='/profile'
@@ -208,6 +234,23 @@ export function Navbar() {
 										<LogOut className='inline w-5 h-5 mr-2' />
 										Logout
 									</button>
+								</>
+							) : (
+								<>
+									<Link
+										to='/login'
+										onClick={() => setIsOpen(false)}
+										className='flex items-center px-4 py-2 space-x-2 font-semibold text-red-600 transition border border-red-600 rounded-lg hover:bg-red-600 hover:text-white'
+									>
+										<LogIn className='w-5 h-5' /> Login
+									</Link>
+									<Link
+										to='/signup'
+										onClick={() => setIsOpen(false)}
+										className='font-semibold text-white transition hover:text-red-400'
+									>
+										Sign Up
+									</Link>
 								</>
 							)}
 						</div>

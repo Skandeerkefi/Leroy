@@ -125,7 +125,7 @@ function HomePage() {
 						/>
 					</div>
 				</section>
-{/* CLIPS SECTION */}
+				{/* CLIPS SECTION */}
 				<section className='container px-4 mx-auto my-16'>
 					<h2 className='flex items-center justify-center gap-2 mb-8 text-2xl font-bold text-center text-red-500 sm:text-3xl'>
 						<Play className='w-6 h-6 text-red-500 sm:w-7 sm:h-7' /> Latest Clips
@@ -213,8 +213,6 @@ function HomePage() {
 						<LeaderboardTable period='monthly' data={topLeaderboard} />
 					</div>
 				</section>
-
-				
 
 				{/* STREAM SCHEDULE */}
 				<section className='container px-4 mx-auto my-16'>

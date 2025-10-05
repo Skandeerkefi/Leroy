@@ -12,6 +12,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/store/useAuthStore";
 import SlotOverlay from "@/pages/SlotOverlay";
 import BonusHuntPage from "@/pages/BonusHuntPage";
+import GuessBalancePage from "@/pages/GuessBalancePage";
+import ManageGuessPage from "@/pages/ManageGuessPage";
+
 function App() {
 	const loadFromStorage = useAuthStore((state) => state.loadFromStorage);
 	const user = useAuthStore((state) => state.user);
@@ -22,13 +25,12 @@ function App() {
 
 	useEffect(() => {
 		if (user?.role === "admin") {
-			// Do admin-specific logic here
 			console.log("User is admin, do admin stuff");
 		} else {
-			// Non-admin logic or nothing
 			console.log("User is not admin");
 		}
 	}, [user]);
+
 	return (
 		<TooltipProvider>
 			<BrowserRouter>
@@ -39,9 +41,11 @@ function App() {
 					<Route path='/giveaways' element={<GiveawaysPage />} />
 					<Route path='/login' element={<LoginPage />} />
 					<Route path='/signup' element={<SignupPage />} />
-					<Route path='*' element={<NotFoundPage />} />
 					<Route path='/slot-overlay' element={<SlotOverlay />} />
 					<Route path='/bonus-hunt' element={<BonusHuntPage />} />
+					<Route path='/guess-balance' element={<GuessBalancePage />} />
+					<Route path='/manage-guess' element={<ManageGuessPage />} />
+					<Route path='*' element={<NotFoundPage />} />
 				</Routes>
 			</BrowserRouter>
 			<Toaster />
