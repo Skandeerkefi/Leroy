@@ -44,6 +44,12 @@ const GuessBalancePage = () => {
 		setGuessInput("");
 	};
 
+	// Filter guesses: admin sees all, users only see their own
+	const visibleGuesses =
+		user?.role === "admin"
+			? guesses
+			: guesses.filter((g) => g.user === user?.id);
+
 	return (
 		<div className='relative flex flex-col min-h-screen'>
 			<GraphicalBackground />
@@ -81,8 +87,8 @@ const GuessBalancePage = () => {
 						)
 					) : (
 						<p className='mb-6 text-gray-300'>
-							🔒 Login to submit your guess — but you can still see others
-							below!
+							🔒 Login to submit your guess — but you can still see your results
+							if logged in!
 						</p>
 					)}
 
@@ -90,14 +96,16 @@ const GuessBalancePage = () => {
 						<p className='mt-2 text-sm font-medium text-white'>{message}</p>
 					)}
 
-					{/* All guesses */}
+					{/* Guesses display */}
 					<div className='mt-10 text-left'>
 						<h2 className='mb-4 text-2xl font-semibold text-[#fc0c2b]'>
-							All Submitted Guesses
+							{user?.role === "admin"
+								? "All Submitted Guesses"
+								: "Your Submitted Guess"}
 						</h2>
 						<div className='space-y-2 overflow-y-auto max-h-60'>
-							{guesses.length > 0 ? (
-								guesses.map((g, index) => {
+							{visibleGuesses.length > 0 ? (
+								visibleGuesses.map((g, index) => {
 									const isCorrect =
 										user?.role === "admin" &&
 										correctBalance !== null &&
@@ -118,7 +126,11 @@ const GuessBalancePage = () => {
 									);
 								})
 							) : (
-								<p className='text-gray-300'>No guesses submitted yet.</p>
+								<p className='text-gray-300'>
+									{user?.role === "admin"
+										? "No guesses submitted yet."
+										: "You haven’t submitted a guess yet."}
+								</p>
 							)}
 						</div>
 					</div>
