@@ -50,7 +50,7 @@ export function Navbar() {
 		},
 		{
 			path: "/guess-balance",
-			name: "guess-balance",
+			name: "Guess the Balance",
 			icon: <Users className='w-5 h-5' />,
 		},
 		// Only show manage-guess if user is admin
