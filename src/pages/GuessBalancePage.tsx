@@ -127,9 +127,13 @@ const GuessBalancePage = () => {
 								>
 									Sort: {sortOrder === "asc" ? "Low → High" : "High → Low"}
 								</Button>
+								
 							)}
 						</div>
-
+{/* NEW: Participants count */}
+<p className='mb-2 text-sm text-gray-300'>
+	Participants: <span className='font-semibold text-white'>{visibleGuesses.length}</span>
+</p>
 						<div className='space-y-2 overflow-y-auto max-h-60'>
 							{visibleGuesses.length > 0 ? (
 								visibleGuesses.map((g, index) => {
