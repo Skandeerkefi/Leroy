@@ -18,6 +18,8 @@ interface GuessStore {
 		guessedNumber: number,
 		userId: string
 	) => Promise<void>;
+
+	reset: () => void; // ⬅️ NEW
 }
 
 export const useGuessStore = create<GuessStore>((set) => ({
@@ -27,16 +29,34 @@ export const useGuessStore = create<GuessStore>((set) => ({
 	status: null,
 	loading: false,
 
+	// 🔹 Reset store on logout
+	reset: () =>
+		set({
+			game: null,
+			guesses: [],
+			message: "",
+			status: null,
+			loading: false,
+		}),
+
 	fetchGuesses: async (token, userId) => {
 		try {
 			set({ loading: true });
+
 			const res = await axios.get<Guess[]>(`${API_URL}/guesses`, {
 				headers: { Authorization: `Bearer ${token}` },
 			});
+
 			const userHasSubmitted = res.data.some((g) => g.user === userId);
-			set({ guesses: res.data, status: userHasSubmitted ? "submitted" : null });
+
+			set({
+				guesses: res.data,
+				status: userHasSubmitted ? "submitted" : null,
+			});
 		} catch (err: any) {
-			set({ message: err.response?.data?.message || "Error fetching guesses" });
+			set({
+				message: err.response?.data?.message || "Error fetching guesses",
+			});
 		} finally {
 			set({ loading: false });
 		}
@@ -45,19 +65,27 @@ export const useGuessStore = create<GuessStore>((set) => ({
 	submitGuess: async (token, guessedNumber, userId) => {
 		try {
 			set({ loading: true });
+
 			const res = await axios.post(
 				`${API_URL}/submit`,
 				{ guessedNumber },
-				{ headers: { Authorization: `Bearer ${token}` } }
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
 			);
+
 			set({ message: res.data.message, status: "submitted" });
-			// Optionally, refresh the guesses list
+
+			// Refresh guesses
 			const guessesRes = await axios.get<Guess[]>(`${API_URL}/guesses`, {
 				headers: { Authorization: `Bearer ${token}` },
 			});
+
 			set({ guesses: guessesRes.data });
 		} catch (err: any) {
-			set({ message: err.response?.data?.message || "Error submitting guess" });
+			set({
+				message: err.response?.data?.message || "Error submitting guess",
+			});
 		} finally {
 			set({ loading: false });
 		}

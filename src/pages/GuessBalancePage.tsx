@@ -16,6 +16,9 @@ const GuessBalancePage = () => {
 	const [guessInput, setGuessInput] = useState("");
 	const [correctBalance, setCorrectBalance] = useState<number | null>(null);
 
+	// NEW: sort state
+	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
 	// Fetch guesses and correct balance
 	useEffect(() => {
 		if (token && user) {
@@ -44,11 +47,20 @@ const GuessBalancePage = () => {
 		setGuessInput("");
 	};
 
-	// Filter guesses: admin sees all, users only see their own
-	const visibleGuesses =
+	// Filter user/admin view
+	let visibleGuesses =
 		user?.role === "admin"
-			? guesses
+			? [...guesses] // admin sees all
 			: guesses.filter((g) => g.user === user?.id);
+
+	// Apply sorting (admin only)
+	if (user?.role === "admin") {
+		visibleGuesses.sort((a, b) =>
+			sortOrder === "asc"
+				? a.guessedNumber - b.guessedNumber
+				: b.guessedNumber - a.guessedNumber
+		);
+	}
 
 	return (
 		<div className='relative flex flex-col min-h-screen'>
@@ -98,11 +110,26 @@ const GuessBalancePage = () => {
 
 					{/* Guesses display */}
 					<div className='mt-10 text-left'>
-						<h2 className='mb-4 text-2xl font-semibold text-[#fc0c2b]'>
-							{user?.role === "admin"
-								? "All Submitted Guesses"
-								: "Your Submitted Guess"}
-						</h2>
+						<div className='flex items-center justify-between mb-4'>
+							<h2 className='text-2xl font-semibold text-[#fc0c2b]'>
+								{user?.role === "admin"
+									? "All Submitted Guesses"
+									: "Your Submitted Guess"}
+							</h2>
+
+							{/* NEW: Admin filter button */}
+							{user?.role === "admin" && (
+								<Button
+									onClick={() =>
+										setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+									}
+									className='bg-white/20 text-white hover:bg-white/30'
+								>
+									Sort: {sortOrder === "asc" ? "Low → High" : "High → Low"}
+								</Button>
+							)}
+						</div>
+
 						<div className='space-y-2 overflow-y-auto max-h-60'>
 							{visibleGuesses.length > 0 ? (
 								visibleGuesses.map((g, index) => {

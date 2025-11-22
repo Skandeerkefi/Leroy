@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Dices, Crown, Users, Gift, User, LogIn, LogOut } from "lucide-react";
 import useMediaQuery from "@/hooks/use-media-query";
 import { useAuthStore } from "@/store/useAuthStore";
-
+import { useGuessStore } from "@/store/guessStore";
 export function Navbar() {
 	const location = useLocation();
 	const isMobile = useMediaQuery("(max-width: 768px)");
@@ -114,12 +114,16 @@ export function Navbar() {
 										<span>{user.username}</span>
 									</Link>
 									<button
-										onClick={logout}
-										className='flex items-center gap-2 px-4 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-red-800 shadow-md hover:from-red-700 hover:to-black text-white font-semibold transition'
-									>
-										<LogOut className='w-5 h-5' />
-										Logout
-									</button>
+	onClick={() => {
+		logout();
+		useGuessStore.getState().reset(); // clear guess data
+		window.location.reload(); // refresh page
+	}}
+	className='flex items-center gap-2 px-4 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-red-800 shadow-md hover:from-red-700 hover:to-black text-white font-semibold transition'
+>
+	<LogOut className='w-5 h-5' />
+	Logout
+</button>
 								</>
 							) : (
 								<>
